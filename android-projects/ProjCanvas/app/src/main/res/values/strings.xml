@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">VVE投影画板</string>
+    <string name="action_calib">标定投影机</string>
+
+</resources>
