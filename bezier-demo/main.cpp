@@ -6,16 +6,19 @@ void onMouse(int event, int x, int y, int, void* extraData)
     BezierInterpolating& bzInterp=*((BezierInterpolating*)extraData);
     Canvas& canvas=bzInterp.getCanvas();
 
-    if( event!=EVENT_LBUTTONDOWN) return;
-    BZPoint2f cur(x,y);
-    if(bzInterp.empty()){
-        canvas.drawCircle(cur, 1 , Scalar(0,0,0), -1);
-    }else{
-        BZPoint2f pre= bzInterp[bzInterp.size()-1];
-        canvas.drawLine((Point2f)pre, (Point2f)cur,  Scalar(0,0,0), 1);
-    }
-    bzInterp.push_back(cur);
 
+    if( event==EVENT_LBUTTONDOWN){
+        BZPoint2f cur(x,y);
+        if(bzInterp.empty()){
+            canvas.drawCircle(cur, 1 , Scalar(0,0,0), -1);
+        }else{
+            BZPoint2f pre= bzInterp[bzInterp.size()-1];
+            canvas.drawLine((Point2f)pre, (Point2f)cur,  Scalar(0,0,0), 1);
+        }
+        bzInterp.push_back(cur);
+    }else if( event==EVENT_RBUTTONDOWN ){
+        bzInterp.clear();
+    }
 }
 
 int main()
@@ -27,6 +30,7 @@ int main()
     setMouseCallback("Canvas", onMouse, &bzInterp);
     bool isRunning=true;
     bool isControlPointsVisible=false;
+    cv::Mat oriMat;
 
     while(isRunning){
         imshow("Canvas", canvas.getMat());
@@ -49,7 +53,9 @@ int main()
         case 'v':
             isControlPointsVisible=!isControlPointsVisible;
             bzInterp.setControlPointsVisibility(isControlPointsVisible);
+            //oriMat=canvas.getMat().clone();
             canvas.clear();
+            //canvas.setMat(oriMat);
             canvas.drawInterpolatedPoints(bzInterp.getBezierPoints(), Scalar(0,0,255), 1, isControlPointsVisible);
             break;
         case 'o':

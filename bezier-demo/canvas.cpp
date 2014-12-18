@@ -73,4 +73,12 @@ void Canvas::drawInterpolatedPoints(vector<BZPoint2f>& pts, cv::Scalar color, in
         }
         cv::line(mat, prev, pts[i+1], color, width, cv::LINE_AA);
     }
+
+    // if it's a loop curve
+    if( controlPointsVisible && (pts[0]==pts[n-1]) ){
+        cv::circle(mat, pts[0].cpt[0], 3, cv::Scalar(0,255,0), 1, cv::LINE_AA);
+        cv::circle(mat, pts[0].cpt[1], 3, cv::Scalar(0,255,0), 1, cv::LINE_AA);
+        cv::line(mat, pts[0].cpt[0], pts[0].cpt[1], cv::Scalar(0,255,0), 1, cv::LINE_AA);
+    }
+
 }
