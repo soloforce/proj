@@ -6,26 +6,26 @@ const int CANVAS_WIDTH=1200;
 const int CANVAS_HEIGHT=800;
 
 //! bezier cubic curve
-class bzPoint2d : public cv::Point2d{
+class bzPoint2f : public cv::Point2f{
     friend class bezierInterpolating;
-    static const float DEFAULT_SMOOTH_FACTOR=0.5;
+    static const float DEFAULT_SMOOTH_FACTOR=0.6;
 public:
-    bzPoint2d(){
+    bzPoint2f(){
         x=y=-1;
-        cpt[0]=cpt[1]=Point2d(-1,-1);
+        cpt[0]=cpt[1]=Point2f(-1,-1);
         smoothFactor=DEFAULT_SMOOTH_FACTOR;
         interpolated=false;
     }
 
-    bzPoint2d(int a, int b){
+    bzPoint2f(int a, int b){
         x=a;
         y=b;
-        cpt[0]=cpt[1]=Point2d(-1,-1);
+        cpt[0]=cpt[1]=Point2f(-1,-1);
         smoothFactor=DEFAULT_SMOOTH_FACTOR;
         interpolated=false;
     }
 
-    bzPoint2d(const bzPoint2d& bpt){
+    bzPoint2f(const bzPoint2f& bpt){
         x=bpt.x;
         y=bpt.y;
         cpt[0]=bpt.cpt[0];
@@ -34,7 +34,7 @@ public:
         interpolated=false;
     }
 
-    bzPoint2d(const Point2d& pt){
+    bzPoint2f(const Point2f& pt){
         x=pt.x;
         y=pt.y;
         smoothFactor=DEFAULT_SMOOTH_FACTOR;
@@ -42,7 +42,7 @@ public:
     }
 
 
-    bzPoint2d& operator=(const bzPoint2d& bpt){
+    bzPoint2f& operator=(const bzPoint2f& bpt){
         x=bpt.x;
         y=bpt.y;
         cpt[0]=bpt.cpt[0];
@@ -52,14 +52,14 @@ public:
     }
 
 
-    bzPoint2d& operator=(const Point2d& pt){
+    bzPoint2f& operator=(const Point2f& pt){
         x=pt.x;
         y=pt.y;
         smoothFactor=DEFAULT_SMOOTH_FACTOR;
         interpolated=false;
     }
 
-    virtual ~bzPoint2d(){};
+    virtual ~bzPoint2f(){};
 public:
     float getSmoothFactor() const { return smoothFactor; }
     void setSmoothFactor(float sm) {
@@ -72,12 +72,12 @@ protected:
     // 1. There are 2 control points associated with a given original
     // point for cubic bezier interpolation, one before, one after.
     // 2. There is only one control point for quadratic bezier interpolation.
-    Point2d cpt[2];
+    Point2f cpt[2];
 
 
     float smoothFactor; // 0~1, the bigger the smoother
 
-    vector<Point2d> interpolatedPoints;
+    vector<Point2f> interpolatedPoints;
     bool interpolated;
     int pointsToBeInterpolated;
 };
@@ -86,52 +86,53 @@ protected:
 
 class bezierInterpolating{
 public:
-    double getDistance(Point2d& pt1, Point2d& pt2){
-        double f1=pt2.x-pt1.x;
-        double f2=pt2.y-pt1.y;
+    float getDistance(Point2f& pt1, Point2f& pt2){
+        float f1=pt2.x-pt1.x;
+        float f2=pt2.y-pt1.y;
         return sqrt(f1*f1+f2*f2);
     }
 
-    Point2d getMiddlePoint(Point2d& pt1, Point2d& pt2){
-        Point2d pt;
+    Point2f getMiddlePoint(Point2f& pt1, Point2f& pt2){
+        Point2f pt;
         pt.x=(pt1.x+pt2.x)/2.0;
         pt.y=(pt1.y+pt2.y)/2.0;
     }
     void calcAllControlPoints();
-    void calcControlPoints(bzPoint2d& prevPt, bzPoint2d& pt, bzPoint2d& nextPt)
+    void calcControlPoints(bzPoint2f& prevPt, bzPoint2f& pt, bzPoint2f& nextPt)
     {
-        Point2d c1, c2;
+        Point2f c1, c2;
 
-        double len1=getDistance(prevPt, pt);
-        double len2=getDistance(pt, nextPt);
-        double k1=len1/(len1+len2);
-        double k2=1-k1;
+        float len1=getDistance(prevPt, pt);
+        float len2=getDistance(pt, nextPt);
+        float k1=len1/(len1+len2);
+        float k2=1-k1;
         k1=pt.smoothFactor*k1;
         k2=pt.smoothFactor*k2;
 
         // middle points between original points
-        Point2d mpt1((prevPt.x+pt.x)/2.0, (prevPt.y+pt.y)/2.0);
-        Point2d mpt2((pt.x+nextPt.x)/2.0, (pt.y+nextPt.y)/2.0);
+        Point2f mpt1((prevPt.x+pt.x)/2.0, (prevPt.y+pt.y)/2.0);
+        Point2f mpt2((pt.x+nextPt.x)/2.0, (pt.y+nextPt.y)/2.0);
 
         // control points
-        pt.cpt[0]=Point2d(pt.x+(mpt1.x-mpt2.x)*k1, pt.y+(mpt1.y-mpt2.y)*k1);
-        pt.cpt[1]=Point2d(pt.x+(mpt2.x-mpt1.x)*k2, pt.y+(mpt2.y-mpt1.y)*k2);
+        pt.cpt[0]=Point2f(pt.x+(mpt1.x-mpt2.x)*k1, pt.y+(mpt1.y-mpt2.y)*k1);
+        pt.cpt[1]=Point2f(pt.x+(mpt2.x-mpt1.x)*k2, pt.y+(mpt2.y-mpt1.y)*k2);
     }
 
-    Point2d calcPointOnCubicBezier( bzPoint2d& pt1, bzPoint2d& pt2, float t );
-    Point2d calcPointOnQuadraticBezier( bzPoint2d& pt1, bzPoint2d& pt2, Point2d cpt, float t);
-    void calcQuadraticBezierPoints(bzPoint2d& pt1, bzPoint2d& pt2, Point2d cpt);
-    void calcCubicBezierPoints(bzPoint2d& pt1, bzPoint2d& pt2);
+    Point2f calcPointOnCubicBezier( bzPoint2f& pt1, bzPoint2f& pt2, float t );
+    Point2f calcPointOnQuadraticBezier( bzPoint2f& pt1, bzPoint2f& pt2, Point2f cpt, float t);
+    void calcQuadraticBezierPoints(bzPoint2f& pt1, bzPoint2f& pt2, Point2f cpt);
+    void calcCubicBezierPoints(bzPoint2f& pt1, bzPoint2f& pt2);
     void calcAllBezierPoints();
     void drawInterpolatedPoints(Mat& canvas, Scalar color, int width);
     bool empty() const { return pts.empty(); }
-    void push_back( Point2d& pt) { pts.push_back(pt); }
-    Point2d operator[](int n){ return pts[n]; }
+    void push_back( Point2f& pt) { pts.push_back(pt); }
+    Point2f operator[](int n){ return pts[n]; }
     void clear(){ pts.clear(); }
     int size(){ return pts.size(); }
     void setControlPointsVisibility(bool flag){ controlPointsVisible=flag; }
+    void drawOriginalPoints(Mat&, Scalar, int);
 protected:
-    vector<bzPoint2d> pts;
+    vector<bzPoint2f> pts;
     bool controlPointsVisible;
 };
 
@@ -143,8 +144,8 @@ void bezierInterpolating::calcAllControlPoints()
         calcControlPoints(pts[i-1], pts[i], pts[i+1]);
     }
 
-    bzPoint2d& firstPt=pts[0];
-    bzPoint2d& lastPt=pts[pts.size()-1];
+    bzPoint2f& firstPt=pts[0];
+    bzPoint2f& lastPt=pts[pts.size()-1];
 
     if( (firstPt.x==lastPt.x) && (firstPt.y==lastPt.y) ){
         calcControlPoints(pts[pts.size()-2], firstPt, pts[1]);
@@ -156,6 +157,17 @@ void bezierInterpolating::calcAllControlPoints()
 
 }
 
+void bezierInterpolating::drawOriginalPoints(Mat& canvas, Scalar color, int width)
+{
+    int n=pts.size();
+    if(n<1) return;
+    if(n==1)  circle(canvas, pts[0], width/2.0 , color, -1, LINE_AA );
+    else{
+        for(int i=0; i<n-1; i++){
+            line(canvas, pts[i], pts[i+1], color, width, LINE_AA);
+        }
+    }
+}
 
 
 /*
@@ -167,12 +179,12 @@ void bezierInterpolating::calcAllControlPoints()
  t為參數值，0 <= t <= 1
 */
 
-Point2d bezierInterpolating::calcPointOnCubicBezier( bzPoint2d& pt1, bzPoint2d& pt2, float t )
+Point2f bezierInterpolating::calcPointOnCubicBezier( bzPoint2f& pt1, bzPoint2f& pt2, float t )
 {
-    double   ax, bx, cx;
-    double   ay, by, cy;
-    double   tSquared, tCubed;
-    Point2d result;
+    float   ax, bx, cx;
+    float   ay, by, cy;
+    float   tSquared, tCubed;
+    Point2f result;
 
     /*計算多項式係數*/
     cx = 3.0 * (pt1.cpt[1].x -pt1.x);
@@ -196,10 +208,10 @@ Point2d bezierInterpolating::calcPointOnCubicBezier( bzPoint2d& pt1, bzPoint2d& 
 
 
 //! cpt: control point between pt1 & pt2
-Point2d bezierInterpolating::calcPointOnQuadraticBezier( bzPoint2d& pt1, bzPoint2d& pt2, Point2d cpt, float t)
+Point2f bezierInterpolating::calcPointOnQuadraticBezier( bzPoint2f& pt1, bzPoint2f& pt2, Point2f cpt, float t)
 {
-    Point2d result;
-    double t2 = t * t;
+    Point2f result;
+    float t2 = t * t;
     result.x=(1 + t2 -2*t) * pt1.x + 2*t*(1-t)*cpt.x + t2*pt2.x;
     result.y=(1 + t2 -2*t) * pt1.y + 2*t*(1-t)*cpt.y + t2*pt2.y;
     return result;
@@ -210,7 +222,7 @@ Point2d bezierInterpolating::calcPointOnQuadraticBezier( bzPoint2d& pt1, bzPoint
  呼叫者必須分配足夠的記憶體以供輸出結果，其為<sizeof(Point2D) numberOfPoints>
 */
 
-void bezierInterpolating::calcCubicBezierPoints(bzPoint2d& pt1, bzPoint2d& pt2)
+void bezierInterpolating::calcCubicBezierPoints(bzPoint2f& pt1, bzPoint2f& pt2)
 {
     float   dt;
     int    i;
@@ -236,7 +248,7 @@ void bezierInterpolating::calcCubicBezierPoints(bzPoint2d& pt1, bzPoint2d& pt2)
     pt1.interpolated=true;
 }
 
-void bezierInterpolating::calcQuadraticBezierPoints(bzPoint2d& pt1, bzPoint2d& pt2, Point2d cpt){
+void bezierInterpolating::calcQuadraticBezierPoints(bzPoint2f& pt1, bzPoint2f& pt2, Point2f cpt){
     float   dt;
     int    i;
 
@@ -301,8 +313,8 @@ void bezierInterpolating::drawInterpolatedPoints(Mat& canvas, Scalar color, int 
             line(canvas, pts[i].cpt[0], pts[i].cpt[1], Scalar(0,255,0), 1, LINE_AA);
         }
 
-        Point2d prev=pts[i];
-        vector<Point2d>& intpts=pts[i].interpolatedPoints;
+        Point2f prev=pts[i];
+        vector<Point2f>& intpts=pts[i].interpolatedPoints;
         int n=intpts.size();
         for(int j=0; j<n; j++){
             line(canvas, prev, intpts[j], color, width, LINE_AA);
@@ -325,12 +337,12 @@ void onMouse(int event, int x, int y, int, void* extraData)
 
     Mat& canvas=*((Mat*)extraData);
     if( event!=EVENT_LBUTTONDOWN) return;
-    bzPoint2d cur(x,y);
+    bzPoint2f cur(x,y);
     if(bzInterp.empty()){
         circle(canvas, cur, 1 , Scalar(0,0,0), -1, LINE_AA );
     }else{
-        bzPoint2d pre= bzInterp[bzInterp.size()-1];
-        line(canvas, (Point2d)pre, (Point2d)cur,  Scalar(0,0,0), 1, LINE_AA);
+        bzPoint2f pre= bzInterp[bzInterp.size()-1];
+        line(canvas, (Point2f)pre, (Point2f)cur,  Scalar(0,0,0), 1, LINE_AA);
     }
     bzInterp.push_back(cur);
 
@@ -367,6 +379,9 @@ int main()
             bzInterp.setControlPointsVisibility(isControlPointsVisible);
             canvas.setTo(Scalar(255,255,255));
             bzInterp.drawInterpolatedPoints(canvas, Scalar(0,0,255), 1);
+            break;
+        case 'o':
+            bzInterp.drawOriginalPoints(canvas, Scalar(100,100,100), 1);
             break;
         }
     }
