@@ -1,11 +1,11 @@
 #include "bzpoint.hpp"
 
+float BZPoint2f::globalSmoothFactor=BZPoint2f::DEFAULT_SMOOTH_FACTOR;
 
 BZPoint2f::~BZPoint2f()
 {
     // clean up job goes here
 }
-
 
 BZPoint2f::BZPoint2f()
 {

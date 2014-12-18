@@ -8,9 +8,10 @@
 class BZPoint2f : public cv::Point2f{
     friend class BezierInterpolating;
     friend class Canvas;
-
+    static const float DEFAULT_SMOOTH_FACTOR=0.5;
+public:
     // default smooth factor
-    static const float DEFAULT_SMOOTH_FACTOR=0.6;
+    static float globalSmoothFactor;
 public:
     BZPoint2f();
     BZPoint2f(int a, int b);
@@ -31,11 +32,12 @@ protected:
     // 2. There is only one control point for quadratic bezier interpolation.
     cv::Point2f cpt[2];
 
-    // smooth factor ranges (0.0~1.0), 0.5 is usually a good choice
-    float smoothFactor;
-
     // vector to store the interpolated points
     std::vector<cv::Point2f> interpolatedPoints;
+
+    // smooth factor ranges (0.0~1.0), 0.5 is usually a good choice
+    // (reserved for future implementation)
+    float smoothFactor;
 
     // (reserved for future implementation)
     bool interpolated;

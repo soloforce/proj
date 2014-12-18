@@ -20,8 +20,12 @@ void BezierInterpolating::calcControlPoints(BZPoint2f& prevPt, BZPoint2f& pt, BZ
     float len2=getDistance(pt, nextPt);
     float k1=len1/(len1+len2);
     float k2=1-k1;
-    k1=pt.smoothFactor*k1;
-    k2=pt.smoothFactor*k2;
+
+    // Two choice here: smoothFactor or globalSmoothFactor
+    //k1=pt.smoothFactor*k1;
+    //k2=pt.smoothFactor*k2;
+    k1=BZPoint2f::globalSmoothFactor*k1;
+    k2=BZPoint2f::globalSmoothFactor*k2;
 
     // middle points between original points
     cv::Point2f mpt1((prevPt.x+pt.x)/2.0, (prevPt.y+pt.y)/2.0);
