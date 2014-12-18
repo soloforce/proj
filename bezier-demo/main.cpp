@@ -20,7 +20,7 @@ void onMouse(int event, int x, int y, int flag, void* extraData)
             canvas.drawLine(pre, cur,  cv::Scalar(0,0,0), 1);
         }
         bzInterp.push_back(cur);
-    }else if( (event== cv::EVENT_MOUSEMOVE) && (flag & cv::EVENT_FLAG_LBUTTON) ){
+    }else if( (event== cv::EVENT_MOUSEMOVE) && (flag & cv::EVENT_FLAG_RBUTTON) ){
 
         if(tickNeedToUpdate){
             lastTick=cv::getTickCount();
@@ -101,6 +101,11 @@ int main()
         case '8':
         case '9':
             BZPoint2f::globalSmoothFactor= ((c&255)-'0')/10.0;
+            bzInterp.calcAllControlPoints();
+            bzInterp.calcAllBezierPoints();
+            break;
+        case '0':
+            BZPoint2f::globalSmoothFactor= 1.0;
             bzInterp.calcAllControlPoints();
             bzInterp.calcAllBezierPoints();
             break;
