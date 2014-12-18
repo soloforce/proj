@@ -18,8 +18,8 @@ public:
 
     void drawCircle(cv::Point2f pt, int radius, cv::Scalar color, int width);
     void drawLine(cv::Point2f pt1, cv::Point2f pt2, cv::Scalar color, int width);
-    void drawOriginalPoints(vector<BZPoint2f>& pts, cv::Scalar color, int width);
-    void drawInterpolatedPoints(vector<BZPoint2f>& pts, cv::Scalar color, int width, bool controlPointsVisible=false);
+    void drawOriginalPoints(std::vector<BZPoint2f>& pts, cv::Scalar color, int width);
+    void drawInterpolatedPoints(std::vector<BZPoint2f>& pts, cv::Scalar color, int width, bool controlPointsVisible=false);
 
 protected:
     cv::Mat mat;

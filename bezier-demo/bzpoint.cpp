@@ -10,7 +10,7 @@ BZPoint2f::~BZPoint2f()
 BZPoint2f::BZPoint2f()
 {
     x=y=-1;
-    cpt[0]=cpt[1]=Point2f(-1,-1);
+    cpt[0]=cpt[1]=cv::Point2f(-1,-1);
     smoothFactor=DEFAULT_SMOOTH_FACTOR;
     interpolated=false;
 }
@@ -20,7 +20,7 @@ BZPoint2f::BZPoint2f(int a, int b)
 {
     x=a;
     y=b;
-    cpt[0]=cpt[1]=Point2f(-1,-1);
+    cpt[0]=cpt[1]=cv::Point2f(-1,-1);
     smoothFactor=DEFAULT_SMOOTH_FACTOR;
     interpolated=false;
 }
@@ -36,7 +36,7 @@ BZPoint2f::BZPoint2f(const BZPoint2f& bpt)
     interpolated=false;
 }
 
-BZPoint2f::BZPoint2f(const Point2f& pt)
+BZPoint2f::BZPoint2f(const cv::Point2f& pt)
 {
     x=pt.x;
     y=pt.y;
@@ -59,12 +59,12 @@ bool BZPoint2f::operator == (const BZPoint2f& bpt)
 {
     return ( (x==bpt.x) && (y==bpt.y) );
 }
-bool BZPoint2f::operator == (const Point2f& bpt)
+bool BZPoint2f::operator == (const cv::Point2f& bpt)
 {
     return ( (x==bpt.x) && (y==bpt.y) );
 }
 
-BZPoint2f& BZPoint2f::operator=(const Point2f& pt)
+BZPoint2f& BZPoint2f::operator=(const cv::Point2f& pt)
 {
     x=pt.x;
     y=pt.y;

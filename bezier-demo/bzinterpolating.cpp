@@ -1,20 +1,20 @@
 #include "bzinterpolating.hpp"
 
-float BezierInterpolating::getDistance(Point2f& pt1, Point2f& pt2){
+float BezierInterpolating::getDistance(cv::Point2f& pt1, cv::Point2f& pt2){
     float f1=pt2.x-pt1.x;
     float f2=pt2.y-pt1.y;
     return sqrt(f1*f1+f2*f2);
 }
 
-Point2f BezierInterpolating::getMiddlePoint(Point2f& pt1, Point2f& pt2){
-    Point2f pt;
+cv::Point2f BezierInterpolating::getMiddlePoint(cv::Point2f& pt1, cv::Point2f& pt2){
+    cv::Point2f pt;
     pt.x=(pt1.x+pt2.x)/2.0;
     pt.y=(pt1.y+pt2.y)/2.0;
 }
 
 void BezierInterpolating::calcControlPoints(BZPoint2f& prevPt, BZPoint2f& pt, BZPoint2f& nextPt)
 {
-    Point2f c1, c2;
+    cv::Point2f c1, c2;
 
     float len1=getDistance(prevPt, pt);
     float len2=getDistance(pt, nextPt);
@@ -24,12 +24,12 @@ void BezierInterpolating::calcControlPoints(BZPoint2f& prevPt, BZPoint2f& pt, BZ
     k2=pt.smoothFactor*k2;
 
     // middle points between original points
-    Point2f mpt1((prevPt.x+pt.x)/2.0, (prevPt.y+pt.y)/2.0);
-    Point2f mpt2((pt.x+nextPt.x)/2.0, (pt.y+nextPt.y)/2.0);
+    cv::Point2f mpt1((prevPt.x+pt.x)/2.0, (prevPt.y+pt.y)/2.0);
+    cv::Point2f mpt2((pt.x+nextPt.x)/2.0, (pt.y+nextPt.y)/2.0);
 
     // control points
-    pt.cpt[0]=Point2f(pt.x+(mpt1.x-mpt2.x)*k1, pt.y+(mpt1.y-mpt2.y)*k1);
-    pt.cpt[1]=Point2f(pt.x+(mpt2.x-mpt1.x)*k2, pt.y+(mpt2.y-mpt1.y)*k2);
+    pt.cpt[0]=cv::Point2f(pt.x+(mpt1.x-mpt2.x)*k1, pt.y+(mpt1.y-mpt2.y)*k1);
+    pt.cpt[1]=cv::Point2f(pt.x+(mpt2.x-mpt1.x)*k2, pt.y+(mpt2.y-mpt1.y)*k2);
 }
 
 
@@ -73,12 +73,12 @@ void BezierInterpolating::calcAllControlPoints()
  t為參數值，0 <= t <= 1
  Ref: http://zh.wikipedia.org/wiki/%E8%B2%9D%E8%8C%B2%E6%9B%B2%E7%B7%9A
 */
-Point2f BezierInterpolating::calcPointOnCubicBezier( BZPoint2f& pt1, BZPoint2f& pt2, float t )
+cv::Point2f BezierInterpolating::calcPointOnCubicBezier( BZPoint2f& pt1, BZPoint2f& pt2, float t )
 {
     float   ax, bx, cx;
     float   ay, by, cy;
     float   tSquared, tCubed;
-    Point2f result;
+    cv::Point2f result;
 
     /*計算多項式係數*/
     cx = 3.0 * (pt1.cpt[1].x -pt1.x);
@@ -102,9 +102,9 @@ Point2f BezierInterpolating::calcPointOnCubicBezier( BZPoint2f& pt1, BZPoint2f& 
 
 
 //! cpt: control point between pt1 & pt2
-Point2f BezierInterpolating::calcPointOnQuadraticBezier( BZPoint2f& pt1, BZPoint2f& pt2, Point2f cpt, float t)
+cv::Point2f BezierInterpolating::calcPointOnQuadraticBezier( BZPoint2f& pt1, BZPoint2f& pt2, cv::Point2f cpt, float t)
 {
-    Point2f result;
+    cv::Point2f result;
     float t2 = t * t;
     result.x=(1 + t2 -2*t) * pt1.x + 2*t*(1-t)*cpt.x + t2*pt2.x;
     result.y=(1 + t2 -2*t) * pt1.y + 2*t*(1-t)*cpt.y + t2*pt2.y;
@@ -114,8 +114,8 @@ Point2f BezierInterpolating::calcPointOnQuadraticBezier( BZPoint2f& pt1, BZPoint
 
 void BezierInterpolating::calcCubicBezierPoints(BZPoint2f& pt1, BZPoint2f& pt2)
 {
-    float   dt;
-    int    i;
+    float dt;
+    int i;
 
     if(pt1.interpolated){
          pt1.interpolatedPoints.clear();
@@ -138,9 +138,9 @@ void BezierInterpolating::calcCubicBezierPoints(BZPoint2f& pt1, BZPoint2f& pt2)
     pt1.interpolated=true;
 }
 
-void BezierInterpolating::calcQuadraticBezierPoints(BZPoint2f& pt1, BZPoint2f& pt2, Point2f cpt){
-    float   dt;
-    int    i;
+void BezierInterpolating::calcQuadraticBezierPoints(BZPoint2f& pt1, BZPoint2f& pt2, cv::Point2f cpt){
+    float dt;
+    int i;
 
     if(pt1.interpolated){
          pt1.interpolatedPoints.clear();

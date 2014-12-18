@@ -19,7 +19,7 @@ void Canvas::setMat(cv::Mat& m)
 void Canvas::clear()
 {
     if(mat.empty()) return;
-    mat.setTo(Scalar(255,255,255));
+    mat.setTo(cv::Scalar(255,255,255));
 }
 
 void Canvas::drawCircle(cv::Point2f pt, int radius, cv::Scalar color, int width)
@@ -33,11 +33,11 @@ void Canvas::drawLine(cv::Point2f pt1, cv::Point2f pt2, cv::Scalar color, int wi
     cv::line(mat, pt1, pt2, color, width, cv::LINE_AA);
 }
 
-void Canvas::drawOriginalPoints(vector<BZPoint2f>& pts, Scalar color, int width)
+void Canvas::drawOriginalPoints(std::vector<BZPoint2f>& pts, cv::Scalar color, int width)
 {
     int n=pts.size();
     if(n<1) return;
-    if(n==1)  circle(mat, pts[0], width/2.0 , color, -1, cv::LINE_AA );
+    if(n==1)  cv::circle(mat, pts[0], width/2.0 , color, -1, cv::LINE_AA );
     else{
         for(int i=0; i<n-1; i++){
             cv::line(mat, pts[i], pts[i+1], color, width, cv::LINE_AA);
@@ -45,15 +45,15 @@ void Canvas::drawOriginalPoints(vector<BZPoint2f>& pts, Scalar color, int width)
     }
 }
 
-void Canvas::drawInterpolatedPoints(vector<BZPoint2f>& pts, cv::Scalar color, int width, bool controlPointsVisible)
+void Canvas::drawInterpolatedPoints(std::vector<BZPoint2f>& pts, cv::Scalar color, int width, bool controlPointsVisible)
 {
     if(pts.empty()) return;
     int n=pts.size();
     if(n==1){
-        circle(mat, pts[0], width/2.0, color, -1, cv::LINE_AA);
+        cv::circle(mat, pts[0], width/2.0, color, -1, cv::LINE_AA);
         return;
     }else if(n==2){
-        line(mat, pts[0], pts[1], color, width, cv::LINE_AA);
+        cv::line(mat, pts[0], pts[1], color, width, cv::LINE_AA);
         return;
     }
 
@@ -65,7 +65,7 @@ void Canvas::drawInterpolatedPoints(vector<BZPoint2f>& pts, cv::Scalar color, in
         }
 
         cv::Point2f prev=pts[i];
-        vector<cv::Point2f>& intpts=pts[i].interpolatedPoints;
+        std::vector<cv::Point2f>& intpts=pts[i].interpolatedPoints;
         int n=intpts.size();
         for(int j=0; j<n; j++){
             cv::line(mat, prev, intpts[j], color, width, cv::LINE_AA);

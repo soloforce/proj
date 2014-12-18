@@ -7,16 +7,16 @@ void onMouse(int event, int x, int y, int, void* extraData)
     Canvas& canvas=bzInterp.getCanvas();
 
 
-    if( event==EVENT_LBUTTONDOWN){
+    if( event==cv::EVENT_LBUTTONDOWN){
         BZPoint2f cur(x,y);
         if(bzInterp.empty()){
-            canvas.drawCircle(cur, 1 , Scalar(0,0,0), -1);
+            canvas.drawCircle(cur, 1 , cv::Scalar(0,0,0), -1);
         }else{
             BZPoint2f pre= bzInterp[bzInterp.size()-1];
-            canvas.drawLine((Point2f)pre, (Point2f)cur,  Scalar(0,0,0), 1);
+            canvas.drawLine(pre, cur,  cv::Scalar(0,0,0), 1);
         }
         bzInterp.push_back(cur);
-    }else if( event==EVENT_RBUTTONDOWN ){
+    }else if( event==cv::EVENT_RBUTTONDOWN ){
         bzInterp.clear();
     }
 }
@@ -26,25 +26,25 @@ int main()
     BezierInterpolating bzInterp;
     Canvas& canvas=bzInterp.createCanvas(Canvas::HEIGHT, Canvas::WIDTH );
 
-    namedWindow("Canvas", 0);
-    setMouseCallback("Canvas", onMouse, &bzInterp);
+    cv::namedWindow("Canvas", 0);
+    cv::setMouseCallback("Canvas", onMouse, &bzInterp);
     bool isRunning=true;
     bool isControlPointsVisible=false;
     cv::Mat oriMat;
 
     while(isRunning){
-        imshow("Canvas", canvas.getMat());
-        int c=waitKey(30);
+        cv::imshow("Canvas", canvas.getMat());
+        int c=cv::waitKey(30);
 
         switch( c&255 ){
         case 27: //ESC key pressed
-            cout<<"Exiting ..."<<endl;
+            std::cout<<"Exiting ..."<<std::endl;
             isRunning=false;
             break;
         case 'b':
             bzInterp.calcAllControlPoints();
             bzInterp.calcAllBezierPoints();
-            canvas.drawInterpolatedPoints(bzInterp.getBezierPoints(), Scalar(0,0,255), 1, isControlPointsVisible);
+            canvas.drawInterpolatedPoints(bzInterp.getBezierPoints(), cv::Scalar(0,0,255), 1, isControlPointsVisible);
             break;
         case 'c':
             bzInterp.clear();
@@ -56,10 +56,10 @@ int main()
             //oriMat=canvas.getMat().clone();
             canvas.clear();
             //canvas.setMat(oriMat);
-            canvas.drawInterpolatedPoints(bzInterp.getBezierPoints(), Scalar(0,0,255), 1, isControlPointsVisible);
+            canvas.drawInterpolatedPoints(bzInterp.getBezierPoints(), cv::Scalar(0,0,255), 1, isControlPointsVisible);
             break;
         case 'o':
-            canvas.drawOriginalPoints(bzInterp.getBezierPoints(), Scalar(100,100,100), 1);
+            canvas.drawOriginalPoints(bzInterp.getBezierPoints(), cv::Scalar(100,100,100), 1);
             break;
         }
     }
