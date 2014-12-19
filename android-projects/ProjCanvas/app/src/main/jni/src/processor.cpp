@@ -1,11 +1,21 @@
 #include "processor.h"
 #include "utils.h"
 
+
+void Processor::reset()
+{
+    calib.reset();
+    state.reset();
+    bzInterp.clear();
+    canvas.clear();
+    inited=false;
+}
+
 void Processor::init(cv::Mat& result, cv::Rect rectCamera, cv::Rect rectCanvas)
 {
     setValidRegion(rectCamera);
 
-    canvas.setCanvas(result);
+    canvas.setMat(result);
     canvas.setValidRegion(rectCanvas);
     canvas.initPalettes();
 
@@ -99,18 +109,40 @@ void Processor::process(cv::Mat& frame)
 void Processor::drawAction()
 {
     const int radius=1;
+    cv::Point2f pt;
+    cv::Scalar bgColor(0,0,0);
+    Pen erasePen=canvas.selectedPen;
+    erasePen.color=bgColor;
 
 	switch(state.penState){
 	case State::PEN_NA:
 	    break;
 	case State::PEN_UP:
+
+        bzInterp.calcAllControlPoints();
+        bzInterp.calcAllBezierPoints();
+
+        // erase the original uninterpolated curve
+        canvas.drawOriginalPoints(bzInterp.getBezierPoints(), erasePen);
+
+        // draw the interpolated curve
+        canvas.drawInterpolatedPoints(bzInterp.getBezierPoints(), canvas.selectedPen);
+
+        // clear the last curve
+        bzInterp.clear();
 	    break;
 	case State::PEN_DOWN:
+	     pt=state.ptMapped;
+	    bzInterp.push_back( pt);
+
 		state.ptPrevMapped=state.ptMapped;
 		canvas.selectPen(state.ptMapped);
 		canvas.drawCircle(state.ptMapped, radius, canvas.selectedPen);
 		break;
 	case State::PEN_MOVE:
+        pt=state.ptMapped;
+	    bzInterp.push_back( pt);
+
 	    canvas.drawLine(state.ptPrevMapped, state.ptMapped, canvas.selectedPen);
 		state.ptPrevMapped=state.ptMapped;
 		break;

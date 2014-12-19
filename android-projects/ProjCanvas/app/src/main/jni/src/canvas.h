@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 
+#include "bzpoint2f.h"
 
 /** Pen class.
 *   Details:
@@ -35,12 +36,12 @@ public:
 class Canvas{
 public:
     Canvas(){
-        selectedPen=Pen(cv::Scalar(255,255,255), 2);
+        selectedPen=Pen(cv::Scalar(255,255,255), 1);
     }
 
 public:
-    void setCanvas(cv::Mat& m){
-        canvas=m;
+    void setMat(cv::Mat& m){
+        mat=m;
     }
 
     void setValidRegion(cv::Rect rect){
@@ -48,46 +49,42 @@ public:
     }
 
     void drawRegion(Pen pen){
-        cv::rectangle(canvas, validRegion, pen.color, pen.thickness, pen.type);
+        cv::rectangle(mat, validRegion, pen.color, pen.thickness, pen.type);
     }
 
     void clear(){
-        canvas.setTo(cv::Scalar(0,0,0));
-    }
-
-    void reset(){
-        selectedPen=Pen(cv::Scalar(255,255,255), 2);
-        canvas.setTo(cv::Scalar(0,0,0));
+        selectedPen=Pen(cv::Scalar(255,255,255), 1);
+        mat.setTo(cv::Scalar(0,0,0));
         drawRegion(Pen(cv::Scalar(255,255,255), 1));
         drawCircle(validRegion.tl(), 3, Pen(cv::Scalar(255,0,0), -1));
     }
 
     void drawCircle(cv::Point center, int radius, Pen pen){
-        if(canvas.empty()) return;
-        cv::circle(canvas, center, radius, pen.color, pen.thickness, pen.type);
+        if(mat.empty()) return;
+        cv::circle(mat, center, radius, pen.color, pen.thickness, pen.type);
     }
 
     void drawRectangle(cv::Rect rect, Pen pen)
     {
-        if(canvas.empty()) return;
-        cv::rectangle(canvas, rect, pen.color, pen.thickness, pen.type);
+        if(mat.empty()) return;
+        cv::rectangle(mat, rect, pen.color, pen.thickness, pen.type);
     }
 
     void drawLine(cv::Point prevPt, cv::Point pt, Pen pen){
-        if(canvas.empty()) return;
-        cv::line(canvas, prevPt, pt, pen.color, pen.thickness, pen.type);
+        if(mat.empty()) return;
+        cv::line(mat, prevPt, pt, pen.color, pen.thickness, pen.type);
     }
 
     void drawPalettes()
     {
-        if(canvas.empty()) return;
+        if(mat.empty()) return;
         for(int i=0; i<palettes.size(); i++)
             drawRectangle( palettes[i].rect, Pen(palettes[i].color,  palettes[i].thickness));
     }
 
     void drawSelectedColor()
     {
-        if(canvas.empty()) return;
+        if(mat.empty()) return;
         cv::Point2d pt(validRegion.br().x-75, validRegion.br().y-75);
         drawCircle(pt, 25, Pen(selectedPen.color, -1));
     }
@@ -101,9 +98,49 @@ public:
                 drawRegion(Pen(cv::Scalar(0,255,0), 1));
                 drawPalettes();
     			break;
-    		}else selectedPen=Pen(palettes[i].color, 2);
+    		}else selectedPen=Pen(palettes[i].color, 1);
     		drawSelectedColor();
     	}
+    }
+
+    void drawOriginalPoints(std::vector<BZPoint2f>& pts, Pen& pen)
+    {
+        int n=pts.size();
+        if(n<1) return;
+        if(n==1){
+            cv::circle(mat, pts[0], pen.thickness/2.0 , pen.color, -1, CV_AA);
+        }else{
+            for(int i=0; i<n-1; i++){
+                cv::line(mat, pts[i], pts[i+1], pen.color, pen.thickness, CV_AA);
+            }
+        }
+    }
+
+    void drawInterpolatedPoints(std::vector<BZPoint2f>& pts, Pen& pen)
+    {
+        const cv::Scalar blue(255,0,0);
+        if(pts.empty()) return;
+        int n=pts.size();
+
+        if(n==1){
+            cv::circle(mat, pts[0], pen.thickness/2.0, pen.color, -1, CV_AA);
+            return;
+        }else if(n==2){
+            cv::line(mat, pts[0], pts[1], pen.color, pen.thickness, CV_AA);
+            return;
+        }
+
+        for(int i=0; i<n-1; i++){
+            cv::Point2f prev=pts[i];
+            std::vector<cv::Point2f>& intpts=pts[i].interpolatedPoints;
+            int m=intpts.size();
+            // draw the lines formed by interpolated points
+            for(int j=0; j<m; j++){
+                cv::line(mat, prev, intpts[j], pen.color, pen.thickness, CV_AA);
+                prev=intpts[j];
+            }
+            cv::line(mat, prev, pts[i+1], pen.color, pen.thickness, CV_AA);
+        }
     }
 
     void initPalettes()
@@ -128,7 +165,7 @@ public:
     }
 public:
     Pen selectedPen;
-    cv::Mat canvas;
+    cv::Mat mat;
     cv::Rect validRegion;
     std::vector<Palette> palettes;
 };
