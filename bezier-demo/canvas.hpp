@@ -4,12 +4,12 @@
 #include "opencv2/core.hpp"
 #include "bzpoint.hpp"
 
+#define CANVAS_AA
+
 class Canvas{
 public:
-    static const int WIDTH=800;
-    static const int HEIGHT=800;
-public:
-    Canvas(int width=WIDTH, int height=HEIGHT);
+    Canvas(int width, int height);
+    Canvas(){}
     ~Canvas();
 public:
     void setMat(cv::Mat& mat);

@@ -2,11 +2,11 @@
 #define _BZINTERPOLATING_HPP_
 
 #include "bzpoint.hpp"
-#include "canvas.hpp"
+
 
 class BezierInterpolating{
     friend class Canvas;
-    static const int DEFAULT_INTERPOLATING_POINTS=50;
+    static const int DEFAULT_INTERPOLATING_POINTS=30;
 public:
     void calcAllControlPoints();
     void calcAllBezierPoints();
@@ -16,8 +16,6 @@ public:
     void clear(){ pts.clear(); }
     int size(){ return pts.size(); }
     void setControlPointsVisibility(bool flag){ controlPointsVisible=flag; }
-    Canvas& getCanvas(){ return canvas; }
-    Canvas& createCanvas(int width, int height){ canvas=Canvas(width, height); return canvas; }
     std::vector<BZPoint2f>& getBezierPoints() { return pts; }
 protected:
     float getDistance(cv::Point2f& pt1, cv::Point2f& pt2);
@@ -28,7 +26,6 @@ protected:
     void calcQuadraticBezierPoints(BZPoint2f& pt1, BZPoint2f& pt2, cv::Point2f cpt);
     void calcCubicBezierPoints(BZPoint2f& pt1, BZPoint2f& pt2);
 protected:
-    Canvas canvas;
     std::vector<BZPoint2f> pts;
     bool controlPointsVisible;
 };

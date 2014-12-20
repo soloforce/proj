@@ -1,15 +1,15 @@
 #include "bzinterpolating.hpp"
+#include "canvas.hpp"
 
-double lastTick;
+static double lastTick;
 static int tickUpdateTimeLimit=200; // in ms
+
+static BezierInterpolating bzInterp;
+static Canvas canvas;
 
 void onMouse(int event, int x, int y, int flag, void* extraData)
 {
     static bool tickNeedToUpdate=true;
-
-    BezierInterpolating& bzInterp=*((BezierInterpolating*)extraData);
-    Canvas& canvas=bzInterp.getCanvas();
-
     if( event == cv::EVENT_LBUTTONDOWN ){
         // triggered when left-button-pressed drag
         BZPoint2f cur(x,y);
@@ -44,13 +44,16 @@ void onMouse(int event, int x, int y, int flag, void* extraData)
     }
 }
 
+
 int main()
 {
-    BezierInterpolating bzInterp;
-    Canvas& canvas=bzInterp.createCanvas(Canvas::HEIGHT, Canvas::WIDTH );
+    const int HEIGHT=800;
+    const int WIDTH=800;
+    cv::Mat mat(HEIGHT, WIDTH, CV_8UC3, cv::Scalar(255,255,255));
+    canvas.setMat(mat);
 
     cv::namedWindow("Canvas", 0);
-    cv::setMouseCallback("Canvas", onMouse, &bzInterp);
+    cv::setMouseCallback("Canvas", onMouse, NULL);
     bool isRunning=true;
     bool isControlPointsVisible=false;
     cv::Mat oriMat;
