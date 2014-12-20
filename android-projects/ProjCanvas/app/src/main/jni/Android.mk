@@ -17,5 +17,6 @@ LOCAL_SRC_FILES := src/main.cpp \
 
 LOCAL_LDLIBS += -llog -lm
 LOCAL_MODULE := projcanvas
+LOCAL_CPPFLAGS += -frtti
 
 include $(BUILD_SHARED_LIBRARY)

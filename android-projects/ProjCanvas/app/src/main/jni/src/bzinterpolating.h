@@ -6,7 +6,7 @@
 
 class BezierInterpolating{
     friend class Canvas;
-    static const int DEFAULT_INTERPOLATING_POINTS=8;
+    static const int DEFAULT_INTERPOLATING_POINTS=5;
 public:
     void calcAllControlPoints();
     void calcAllBezierPoints();

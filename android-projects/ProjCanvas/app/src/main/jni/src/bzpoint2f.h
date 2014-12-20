@@ -8,7 +8,7 @@
 class BZPoint2f : public cv::Point2f{
     friend class BezierInterpolating;
     friend class Canvas;
-    static const float DEFAULT_SMOOTH_FACTOR=0.5;
+    static const float DEFAULT_SMOOTH_FACTOR=0.7;
 public:
     // default smooth factor
     static float globalSmoothFactor;
