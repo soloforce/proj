@@ -111,19 +111,22 @@ void Processor::drawAction()
 	case State::PEN_NA:
 	    break;
 	case State::PEN_UP:
-        bzInterp.calcAllControlPoints();
-        bzInterp.calcAllBezierPoints();
-        // erase the original uninterpolated curve
-        canvas.drawOriginalPoints(bzInterp.getBezierPoints(), erasePen);
-        // draw the interpolated curve
-        canvas.drawInterpolatedPoints(bzInterp.getBezierPoints(), canvas.selectedPen);
-        // clear the last curve
-        bzInterp.clear();
+	    if(canvas.interpEnabled){
+            bzInterp.calcAllControlPoints();
+            bzInterp.calcAllBezierPoints();
+            // erase the original uninterpolated curve
+            canvas.drawOriginalPoints(bzInterp.getBezierPoints(), erasePen);
+            // draw the interpolated curve
+            canvas.drawInterpolatedPoints(bzInterp.getBezierPoints(), canvas.selectedPen);
+            // clear the last curve
+            bzInterp.clear();
+	    }
 	    break;
 	case State::PEN_DOWN:
 	    // check if selecting pen
 		if(canvas.selectPen(state.ptMapped)){
 		    state.change(false);
+		    bzInterp.clear();
 		}else{
             // draw the touch
             pt=state.ptMapped;

@@ -13,7 +13,8 @@ include  /home/genleung/develop/android/ocv4android/sdk/native/jni/OpenCV.mk
 LOCAL_SRC_FILES := src/main.cpp \
                    src/processor.cpp \
                    src/bzinterpolating.cpp \
-                   src/bzpoint2f.cpp
+                   src/bzpoint2f.cpp \
+                   src/canvas.cpp
 
 LOCAL_LDLIBS += -llog -lm
 LOCAL_MODULE := projcanvas

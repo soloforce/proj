@@ -99,22 +99,18 @@ protected:
 class InterpolatingWidget: public Widget{
     friend class Canvas;
 public:
-    InterpolatingWidget(cv::Mat& m, cv::Rect rect):Widget(m, rect), interpEnabled(true){
+    InterpolatingWidget(cv::Mat& m, cv::Rect rect, bool flag):Widget(m, rect),  interpEnabled(flag){
         type=TYPE_INTERPOLATING;
     }
     virtual void draw(){
         if(mat.empty()) return;
-        cv::rectangle(mat, region, borderColor, borderThickness, CV_AA);
         cv::Point2f center=cv::Point2f(region.tl().x+region.width/2, region.tl().y+region.height/2);
-        int radius=region.width-borderThickness*4;
-        cv::circle(mat, center, radius, innerColor, borderThickness, CV_AA);
-
-        if(!interpEnabled){
-            cv::Point2f tr(region.br().x, region.tl().y);
-            cv::Point2f bl(region.tl().x, region.br().y);
-            cv::line(mat, region.tl(), region.br(), innerColor, borderThickness, CV_AA);
-            cv::line(mat, tr, bl, innerColor, borderThickness, CV_AA);
-        }
+        int radius=region.width/3.0;
+        cv::rectangle(mat, region, cv::Scalar(255,255,255), borderThickness, CV_AA);
+        if(interpEnabled)
+            cv::circle(mat, center, radius, borderColor, borderThickness, CV_AA);
+        else
+            cv::line(mat, region.tl(), region.br(), cv::Scalar(255,255,255), borderThickness, CV_AA);
     }
 protected:
     bool interpEnabled;
